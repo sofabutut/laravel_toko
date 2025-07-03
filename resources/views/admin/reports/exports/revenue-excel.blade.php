@@ -17,9 +17,10 @@
 			$totalShippingAmount = 0;
 			$totalNetRevenue = 0;
 		@endphp
+
 		@foreach ($revenues as $revenue)
 			<tr>    
-				<td>{{ $revenue->date, 'd M Y' }}</td>
+				<td>{{ \Carbon\Carbon::parse($revenue->date)->format('d M Y') }}</td>
 				<td>{{ $revenue->num_of_orders }}</td>
 				<td>{{ $revenue->gross_revenue }}</td>
 				<td>{{ $revenue->taxes_amount }}</td>
@@ -35,8 +36,9 @@
 				$totalNetRevenue += $revenue->net_revenue;
 			@endphp
 		@endforeach
+
 		<tr>
-			<td>Total</td>
+			<td><strong>Total</strong></td>
 			<td>{{ $totalOrders }}</td>
 			<td>{{ $totalGrossRevenue }}</td>
 			<td>{{ $totalTaxesAmount }}</td>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,5 +74,16 @@ Route::group(['middleware' => 'auth'], function() {
     });
 });
 
-Auth::routes();
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
+    Route::resource('products', ProductController::class);
+});
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth'])
+    ->group(function () {
+        Route::resource('products', ProductController::class);
+    });
+
+Auth::routes(['verify' => true]);
+
 

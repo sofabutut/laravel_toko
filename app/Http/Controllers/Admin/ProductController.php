@@ -14,11 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {   
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -28,11 +23,6 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -43,42 +33,27 @@ class ProductController extends Controller
         return view('admin.products.create', compact('categories','tags'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(ProductRequest $request)
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-       
-        if ($request->validated()){
-            $product = Product::create($request->except('tags', 'images', '_token'));
-            $product->tags()->attach($request->tags);
 
-            if ($request->images && count($request->images) > 0) {
-                (new ImageService())->storeProductImages($request->images, $product);
-            }
+        $product = Product::create($request->except(['tags', 'images']));
 
-            return redirect()->route('admin.products.index')->with([
-                'message' => 'success created !',
-                'alert-type' => 'success'
-            ]);
+        if ($request->has('tags')) {
+            $product->tags()->sync($request->tags);
         }
 
-        return back()->with([
-            'message' => 'Something was wrong, please try again later',
-            'alert-type' => 'danger'
+        if ($request->hasFile('images') && count($request->images) > 0) {
+            $index = 1;
+            (new ImageService())->storeProductImages($request->images, $product, $index);
+        }
+
+        return redirect()->route('admin.products.index')->with([
+            'message' => 'Produk berhasil ditambahkan!',
+            'alert-type' => 'success'
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Product $product)
     {
         abort_if(Gate::denies('product_view'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -86,12 +61,6 @@ class ProductController extends Controller
         return view('admin.products.show', compact('product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -102,45 +71,28 @@ class ProductController extends Controller
         return view('admin.products.edit', compact('categories','product','tags'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(ProductRequest $request,Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if ($request->validated()) {
-            $product->update($request->except('tags', 'images', '_token'));
+        $product->update($request->except(['tags', 'images', '_token', '_method']));
+
+        if ($request->has('tags')) {
             $product->tags()->sync($request->tags);
-
-            $i = $product->media()->count() + 1;
-
-            if ($request->images && count($request->images) > 0) {
-                (new ImageService())->storeProductImages($request->images, $product, $i);
-            }
-
-            return redirect()->route('admin.products.index')->with([
-                'message' => 'success created !',
-                'alert-type' => 'success'
-            ]);
         }
 
-        return back()->with([
-            'message' => 'Something was wrong, please try again late',
-            'alert-type' => 'danger'
-        ]);  
+        $index = $product->media()->count() + 1;
+
+        if ($request->hasFile('images') && count($request->images) > 0) {
+            (new ImageService())->storeProductImages($request->images, $product, $index);
+        }
+
+        return redirect()->route('admin.products.index')->with([
+            'message' => 'Produk berhasil diupdate!',
+            'alert-type' => 'success'
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Product $product)
     {
         abort_if(Gate::denies('product_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -155,15 +107,15 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('admin.products.index')->with([
-            'message' => 'success deleted !',
+            'message' => 'Produk berhasil dihapus!',
             'alert-type' => 'danger',
-            ]);
+        ]);
     }
 
     public function removeImage(Request $request)
     {
         abort_if(Gate::denies('product_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-       
+
         $product = Product::findOrFail($request->product_id);
         $image = $product->media()->whereId($request->image_id)->first();
 

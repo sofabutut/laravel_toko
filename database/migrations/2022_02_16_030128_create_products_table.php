@@ -13,22 +13,21 @@ class CreateProductsTable extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->index();
-            $table->string('slug');
-            $table->integer('price');
-            $table->text('description');
-            $table->longText('details');
-            $table->integer('weight');
-            $table->integer('quantity')->default(0);
-            $table->boolean('status')->default(false);
-            $table->unsignedTinyInteger('review_able')->default(1);
-            $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('products', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->text('description');
+        $table->string('category');
+        $table->enum('condition', ['baru', 'bekas']);
+        $table->integer('price');
+        $table->integer('stock');
+        $table->string('image')->nullable();
+        $table->string('video')->nullable();
+        $table->boolean('warranty')->default(false);
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

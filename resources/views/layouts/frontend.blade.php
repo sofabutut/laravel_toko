@@ -194,7 +194,7 @@
                         <div class="footer-widget mb-30">
                         <img height="60" style="transform:scale(1.5);object-fit: cover;" src="{{ asset('frontend/assets/img/logo/logo.png') }}" alt="">
                             <div class="footer-about-2">
-                                <p>There are many variations of passages of Lorem Ipsum <br>the majority have suffered alteration in some form, by <br> injected humour</p>
+                                <p>Kami menghadirkan produk pilihan berkualitas tinggi <br>ntuk menunjang gaya hidup modern Anda. <br> Kepuasan pelanggan adalah prioritas utama kami.</p>
                             </div>
                         </div>
                         <div class="footer-widget mb-30">
@@ -205,12 +205,12 @@
                                         <span>Address: </span>
                                     </div>
                                     <div class="footer-info-content3">
-                                        <p>66 Sipu road Rampura Banasree <br>USA- 10800</p>
+                                        <p>jalan tanah merdeka <br>indonesia -18750</p>
                                     </div>
                                 </div>
                                 <div class="footer-address-furniture">
                                     <div class="footer-info-icon3">
-                                        <span>Phone: </span>
+                                        <span>Admin: </span>
                                     </div>
                                     <div class="footer-info-content3">
                                         <p>+8801 (33) 515609735 <br>+8801 (66) 223352333</p>
