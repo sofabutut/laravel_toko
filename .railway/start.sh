@@ -1,15 +1,19 @@
 #!/bin/bash
 
-# Set permission biar Laravel bisa nulis ke log
+# Install dependencies Laravel
+composer install --no-interaction --prefer-dist --optimize-autoloader
+
+# Set permission agar bisa nulis log dll
 chmod -R 775 storage
 chmod -R 775 bootstrap/cache
 
-# Jalankan cache dan migrasi
+# Cache config dan route
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
+# Jalankan migrate
 php artisan migrate --force
 
-# Jalankan PHP server (opsional bisa ganti php-fpm tergantung image)
-php-fpm
+# Jalankan Laravel built-in server
+php artisan serve --host=0.0.0.0 --port=3000
