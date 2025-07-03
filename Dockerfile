@@ -23,4 +23,5 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 RUN chmod -R 775 storage bootstrap/cache
 
 # Jalankan Laravel + Apache
-CMD php artisan config:cache && apache2-foreground
+CMD ["sh", "-c", "composer install && php artisan config:cache && apache2-foreground"]
+
