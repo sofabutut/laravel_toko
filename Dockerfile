@@ -1,38 +1,15 @@
-FROM php:8.1-fpm
+FROM laravelsail/php82-composer:latest
 
-# Install tools & PHP extensions
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    zip \
-    unzip \
-    git \
-    curl \
-    libonig-dev \
-    libxml2-dev
+RUN apt-get update && apt-get install -y apache2 libapache2-mod-php libpng-dev zip unzip git \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN a2enmod rewrite
 
-# Set working directory
-WORKDIR /var/www
+COPY . /var/www/html
+WORKDIR /var/www/html
 
-# Copy project Laravel ke dalam container
-COPY . /var/www
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN chmod -R 775 storage bootstrap/cache
 
-# Generate Laravel key
-RUN php artisan key:generate
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www
-
-# Expose port 8000
-EXPOSE 8000
-
-# Start Laravel
-CMD php artisan serve --host=0.0.0.0 --port=8000
+CMD php artisan config:cache && apache2ctl -D FOREGROUND
